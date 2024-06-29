@@ -28,8 +28,8 @@ class _SearchPageState extends State<SearchPage> {
 
   void _stopSearching() {
     setState(() {
+      FocusScope.of(context).unfocus();
       isSearching = false;
-      _searchController.clearComposing();
     });
   }
 

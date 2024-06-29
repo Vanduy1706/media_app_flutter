@@ -12,6 +12,8 @@ class NotificationsPage extends StatefulWidget {
 class _NotificationsPageState extends State<NotificationsPage> {
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       backgroundColor: Color.fromRGBO(244, 244, 244, 1),
       appBar: AppBar(
@@ -20,15 +22,22 @@ class _NotificationsPageState extends State<NotificationsPage> {
           onTap: () => {
             widget.scaffoldKey.currentState?.openDrawer()
           },
-          child: const Icon(Icons.account_circle, color: Color.fromRGBO(38, 37, 43, 1), size: 24,),
+          child: Icon(Icons.account_circle, color: Color.fromRGBO(38, 37, 43, 1), size: screenWidth * 0.06), // 6% of screen width
         ),
-        title: Text('Thông báo', style: TextStyle(color: Color.fromRGBO(38, 37, 43, 1), fontWeight: FontWeight.bold),),
+        title: Text(
+          'Thông báo',
+          style: TextStyle(
+            color: Color.fromRGBO(38, 37, 43, 1),
+            fontWeight: FontWeight.bold,
+            fontSize: screenWidth * 0.05, // 5% of screen width
+          ),
+        ),
         actions: <Widget>[
           GestureDetector(
             onTap: () => {},
-            child: const Icon(Icons.settings, color: Color.fromRGBO(38, 37, 43, 1), size: 24,),
+            child: Icon(Icons.settings, color: Color.fromRGBO(38, 37, 43, 1), size: screenWidth * 0.06), // 6% of screen width
           ),
-          SizedBox(width: 10,)
+          SizedBox(width: screenWidth * 0.025), // 2.5% of screen width
         ],
       ),
       body: ListView(
