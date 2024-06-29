@@ -126,6 +126,10 @@ class _SearchPageState extends State<SearchPage> {
                 imageFollow: 'https://i.pinimg.com/564x/60/d3/89/60d3891be1db0a41088404ba4f4f1e08.jpg',
                 nameFollowUser: 'Nghĩa',
               ),
+              Recommend(
+                imageFollow: 'https://i.pinimg.com/564x/60/d3/89/60d3891be1db0a41088404ba4f4f1e08.jpg',
+                nameFollowUser: 'Như Sao',
+              ),
             ],
           ),
         ),
