@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:media_mobile/features/search/search_result.dart';
 import 'package:media_mobile/features/search/widgets/recommend.dart';
 import 'package:media_mobile/features/search/widgets/search_history.dart';
+import 'dart:convert';
 
 class SearchPage extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -13,31 +15,54 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   final TextEditingController _searchController = TextEditingController();
   bool isSearching = false;
-  List<String> searchResults = [];
+  List<SearchResult> searchResults = [];
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void dispose() {
     _searchController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
   void _startSearching() {
     setState(() {
       isSearching = true;
+      _focusNode.requestFocus();
     });
   }
 
   void _stopSearching() {
     setState(() {
-      FocusScope.of(context).unfocus();
+      _focusNode.unfocus();
       isSearching = false;
       searchResults.clear();
     });
   }
 
   void _updateSearchResults(String query) {
+    // Ví dụ mảng JSON giả lập
+    String jsonResponse = '''
+    [
+      {
+        "imageFollow": "https://i.pinimg.com/564x/51/91/4f/51914fe23c96ea0e951bcd548417709b.jpg",
+        "nameFollowUser": "Trần Thị Yến Nhi"
+      },
+      {
+        "imageFollow": "https://i.pinimg.com/736x/a1/32/f8/a132f8354f89e6d35c474b0f7e167d56.jpg",
+        "nameFollowUser": "Võ Phương Thảo"
+      },
+      {
+        "imageFollow": "https://i.pinimg.com/564x/11/a8/a7/11a8a76b8022e90bd30567316a113a3a.jpg",
+        "nameFollowUser": "Lý Gia Hân"
+      }
+    ]
+    ''';
+
+    List<dynamic> jsonResults = json.decode(jsonResponse);
+
     setState(() {
-      searchResults = ['Result 1', 'Result 2', 'Result 3']; // Thay bằng logic tìm kiếm thực tế
+      searchResults = jsonResults.map((json) => SearchResult.fromJson(json)).toList();
     });
   }
 
@@ -51,6 +76,10 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
+    // ignore: deprecated_member_use
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
@@ -90,8 +119,9 @@ class _SearchPageState extends State<SearchPage> {
                     child: Row(
                       children: [
                         Expanded(
-                            child: TextField(
+                          child: TextField(
                           controller: _searchController,
+                          focusNode: _focusNode,
                           decoration: InputDecoration(
                             hintText: 'Tìm kiếm ở đây',
                             hintStyle: TextStyle(
@@ -104,7 +134,7 @@ class _SearchPageState extends State<SearchPage> {
                           onTap: _startSearching,
                           onChanged: _updateSearchResults,
                         )),
-                        !isSearching
+                        !isSearching || _searchController.text.isEmpty
                             ? Icon(Icons.search,
                                 color: Color.fromRGBO(201, 200, 202, 1))
                             : GestureDetector(
@@ -146,7 +176,16 @@ class _SearchPageState extends State<SearchPage> {
               children: [
                 if (isSearching && searchResults.isNotEmpty)
                   ...searchResults.map((result) => ListTile(
-                        title: Text(result),
+                        leading: ClipOval(
+                          child: Image.network(
+                            result.imageFollow, 
+                            fit: BoxFit.cover,
+                            width: screenWidth * 0.10,
+                            height: screenWidth * 0.10,
+                          ),
+                        ),
+                        title: Text(result.nameFollowUser),
+                        
                       )),
                 if (!isSearching || searchResults.isEmpty) ...[
                   Padding(
