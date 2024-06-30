@@ -6,6 +6,7 @@ import 'package:media_mobile/features/follow/followpage.dart';
 import 'package:media_mobile/features/home/home_page.dart';
 import 'package:media_mobile/features/menu/customdrawer.dart';
 import 'package:media_mobile/features/notification/notificationpage.dart';
+import 'package:media_mobile/features/post/post_form.dart';
 import 'package:media_mobile/features/search/searchpage.dart';
 
 class MainScreen extends StatefulWidget {
@@ -147,7 +148,12 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       ),
       floatingActionButton: isFabVisible
           ? FloatingActionButton(
-              onPressed: () => {},
+              onPressed: () => {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const PostForm()),
+                )
+              },
               backgroundColor: Color.fromRGBO(119, 82, 254, 1),
               child: Icon(
                 Icons.add,
