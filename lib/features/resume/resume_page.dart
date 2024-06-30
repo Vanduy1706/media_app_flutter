@@ -14,7 +14,7 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 1, vsync: this);
+    _tabController = TabController(length: 5, vsync: this);
   }
 
   @override
@@ -28,11 +28,16 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
     return Scaffold(
       extendBodyBehindAppBar: true, // Đảm bảo hình chữ nhật nằm dưới app bar
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.black38,
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Color.fromRGBO(244, 244, 244, 1)),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(
+              context,
+              true,
+            );
+          },
         ),
         actions: [
           IconButton(
@@ -152,11 +157,18 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                     // Đặt TabBar ở đây
                     TabBar(
                       controller: _tabController,
+                      isScrollable: true,
                       tabs: [
-                        Tab(text: 'Bài đăng'),
+                        Tab(child: Text('Bài đăng', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
+                        Tab(child: Text('Lượt bình luận', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
+                        Tab(child: Text('Bài viết', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
+                        Tab(child: Text('Lượt thích', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
+                        Tab(child: Text('Phương tiện', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
                       ],
-                      labelColor: Colors.black,
+                      labelColor: Color.fromRGBO(38, 37, 43, 1),
                       indicatorColor: Color.fromRGBO(119, 82, 254, 1),
+                      indicatorPadding: EdgeInsets.zero,
+                      tabAlignment: TabAlignment.start,
                     ),
                     SizedBox(
                       height: 400, // điều chỉnh chiều cao tùy ý
@@ -196,6 +208,30 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                                 totalMarks: 20,
                                 imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
                               ),
+                            ],
+                          ),
+                          ListView(
+                            padding: EdgeInsets.zero,
+                            children: <Widget>[
+                              Center(child: Text('Lượt bình luận'))
+                            ],
+                          ),
+                          ListView(
+                            padding: EdgeInsets.zero,
+                            children: <Widget>[
+                              Center(child: Text('Bài viết'))
+                            ],
+                          ),
+                          ListView(
+                            padding: EdgeInsets.zero,
+                            children: <Widget>[
+                              Center(child: Text('Lượt thích'))
+                            ],
+                          ),
+                          ListView(
+                            padding: EdgeInsets.zero,
+                            children: <Widget>[
+                              Center(child: Text('Phương tiện'))
                             ],
                           ),
                         ],

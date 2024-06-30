@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:media_mobile/features/authentication/login/login_page.dart';
+import 'package:media_mobile/loadingscreen.dart';
 
 
 void main() {
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: LoginPage()
+      home: LoadingScreen()
     );
   }
 }

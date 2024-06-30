@@ -3,7 +3,8 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:media_mobile/features/resume/resume_page.dart';
 
 class CustomDrawer extends StatefulWidget {
-  const CustomDrawer({super.key});
+  final GlobalKey<ScaffoldState> scaffoldKey;
+  const CustomDrawer({super.key, required this.scaffoldKey});
 
   @override
   State<CustomDrawer> createState() => _CustomDrawerState();
@@ -63,6 +64,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 context,
                 MaterialPageRoute(builder: (context) => const ResumePage()),
               );
+              widget.scaffoldKey.currentState?.closeDrawer();
             },
           ),
           ListTile(

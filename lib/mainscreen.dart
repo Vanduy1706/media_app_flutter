@@ -82,7 +82,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
           ],
         ),
       ),
-      drawer: CustomDrawer(),
+      drawer: CustomDrawer(scaffoldKey: _scaffoldKey,),
       bottomNavigationBar: SizeTransition(
         sizeFactor: _offsetAnimation,
         child: BottomNavigationBar(
