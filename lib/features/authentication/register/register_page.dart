@@ -17,7 +17,7 @@ class _RegisterPageState extends State<RegisterPage> {
     return Scaffold(
       body: SingleChildScrollView(
         child: SizedBox(
-          height: screenHeight - MediaQuery.of(context).padding.top,
+          height: screenHeight,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -27,7 +27,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Padding(
-                      padding: EdgeInsets.only(bottom: screenHeight * 0.03), // 3% of screen height as padding
+                      padding: EdgeInsets.only(bottom: screenHeight * 0.01), // 3% of screen height as padding
                       child: Image.asset('assets/images/logo.png'),
                     ),
                     Column(
@@ -41,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             fontSize: screenWidth * 0.05, // 5% of screen width as font size
                           ),
                         ),
-                        SizedBox(height: screenHeight * 0.02), // 2% of screen height as space
+                        SizedBox(height: screenHeight * 0.01), // 2% of screen height as space
                         Text(
                           "Nhập thông tin cá nhân của bạn",
                           style: TextStyle(
@@ -50,7 +50,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             fontSize: screenWidth * 0.035, // 3.5% of screen width as font size
                           ),
                         ),
-                        SizedBox(height: screenHeight * 0.02),
+                        SizedBox(height: screenHeight * 0.01),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
