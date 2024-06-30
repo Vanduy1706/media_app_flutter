@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:media_mobile/features/resume/resume_page.dart';
 
 class CustomDrawer extends StatefulWidget {
   const CustomDrawer({super.key});
@@ -58,7 +59,10 @@ class _CustomDrawerState extends State<CustomDrawer> {
             leading: Icon(Icons.person),
             title: Text('Hồ sơ'),
             onTap: () {
-              // Add your onTap code here!
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ResumePage()),
+              );
             },
           ),
           ListTile(

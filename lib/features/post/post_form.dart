@@ -108,7 +108,7 @@ class _PostFormState extends State<PostForm> {
             color: Colors.transparent, // Đặt màu nền trong suốt để chỉ thấy màu của Container
             elevation: 0, // Loại bỏ shadow
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 IconButton(
                   icon: Icon(Icons.photo, color: Color.fromRGBO(119, 82, 254, 1),),
