@@ -50,16 +50,14 @@ class _LoadingScreenState extends State<LoadingScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: Stack(
-          alignment: Alignment.center,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Positioned(
-              top: 50, // Adjust position as needed
-              child: Image.asset(
-                'assets/images/logo.png', // Replace with your logo path
-                width: 100,
-                height: 100,
-              ),
+            Image.asset(
+              'assets/images/logo.png', // Replace with your logo path
+              width: 100,
+              height: 100,
             ),
             AnimatedBuilder(
               animation: _animation,

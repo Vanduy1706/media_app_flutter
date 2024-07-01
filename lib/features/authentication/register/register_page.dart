@@ -9,6 +9,8 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+    bool passwordObscured = true;
+    bool confirmedPasswordObscured = true;
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -112,14 +114,20 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                             TextField(
+                              obscureText: passwordObscured,
                               decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  padding: EdgeInsetsDirectional.only(end: 12),
-                                  icon: Icon(Icons.visibility),
-                                  onPressed: () {},
+                                suffixIcon:IconButton(
+                                  padding: EdgeInsetsDirectional.only(end: 1),
+                                  icon: Icon(passwordObscured ? Icons.visibility_off : Icons.visibility),
+                                  onPressed: () {
+                                    setState(() {
+                                      passwordObscured = !passwordObscured;
+                                    });
+                                  },
                                 ),
+                    
                                 border: OutlineInputBorder(),
-                                hintText: "Nhập mật khẩu",
+                                hintText: "Nhập Mật khẩu",
                               ),
                             )
                           ],
@@ -140,12 +148,18 @@ class _RegisterPageState extends State<RegisterPage> {
                               ),
                             ),
                             TextField(
+                              obscureText: confirmedPasswordObscured,
                               decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  padding: EdgeInsetsDirectional.only(end: 12),
-                                  icon: Icon(Icons.visibility),
-                                  onPressed: () {},
+                                suffixIcon:IconButton(
+                                  padding: EdgeInsetsDirectional.only(end: 1),
+                                  icon: Icon(confirmedPasswordObscured ? Icons.visibility_off : Icons.visibility),
+                                  onPressed: () {
+                                    setState(() {
+                                      confirmedPasswordObscured = !confirmedPasswordObscured;
+                                    });
+                                  },
                                 ),
+                    
                                 border: OutlineInputBorder(),
                                 hintText: "Nhập xác nhận mật khẩu",
                               ),

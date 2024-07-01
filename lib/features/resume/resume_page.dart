@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:media_mobile/features/home/widgets/postwidget.dart'; // Đảm bảo rằng đường dẫn này đúng
+import 'package:media_mobile/features/home/widgets/postwidget.dart';
+import 'package:media_mobile/features/resume/edit_resume.dart'; // Đảm bảo rằng đường dẫn này đúng
 
 class ResumePage extends StatefulWidget {
   const ResumePage({super.key});
@@ -47,29 +48,36 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
         ],
       ),
       body: Container(
-        color: Color.fromRGBO(244, 244, 244, 1), // Chỉnh màu nền cho toàn màn hình
+        color: Color.fromRGBO(244, 244, 244, 1), // Chỉnh màu nền cho toàn màn hìnhhe
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Container(
+                height: 200,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: NetworkImage(
+                        'https://i.pinimg.com/564x/fa/64/60/fa646054678f88f90d036acec1803eee.jpg'), // thay bằng đường dẫn ảnh nền của bạn
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
               Stack(
-                alignment: Alignment.bottomLeft,
-                clipBehavior: Clip.none, // Đảm bảo hình tròn không bị cắt
+                alignment: Alignment.topLeft,
+                clipBehavior: Clip.none,
                 children: [
                   Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: NetworkImage(
-                            'https://i.pinimg.com/564x/fa/64/60/fa646054678f88f90d036acec1803eee.jpg'), // thay bằng đường dẫn ảnh nền của bạn
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    height: 70,
                   ),
                   Positioned(
                     right: 10,
-                    top: 200,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const EditResume()),
+                        );
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color.fromRGBO(119, 82, 254, 1), // Màu nền của nút
                         shape: RoundedRectangleBorder(
@@ -84,7 +92,7 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                   ),
                   Positioned(
                     left: 10,
-                    top: 160, // điều chỉnh vị trí của hình tròn để nó đè lên hình chữ nhật
+                    bottom: 30, // điều chỉnh vị trí của hình tròn để nó đè lên hình chữ nhật
                     child: CircleAvatar(
                       radius: 40,
                       backgroundImage: NetworkImage(
@@ -93,9 +101,8 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                   ),
                 ],
               ),
-              SizedBox(height: 60),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -153,93 +160,94 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                         Text('Đã tham gia tháng 2 năm 2022'),
                       ],
                     ),
-                    SizedBox(height: 24),
-                    // Đặt TabBar ở đây
-                    TabBar(
-                      controller: _tabController,
-                      isScrollable: true,
-                      tabs: [
-                        Tab(child: Text('Bài đăng', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
-                        Tab(child: Text('Lượt bình luận', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
-                        Tab(child: Text('Bài viết', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
-                        Tab(child: Text('Lượt thích', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
-                        Tab(child: Text('Phương tiện', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
-                      ],
-                      labelColor: Color.fromRGBO(38, 37, 43, 1),
-                      indicatorColor: Color.fromRGBO(119, 82, 254, 1),
-                      indicatorPadding: EdgeInsets.zero,
-                      tabAlignment: TabAlignment.start,
-                    ),
-                    SizedBox(
-                      height: 400, // điều chỉnh chiều cao tùy ý
-                      child: TabBarView(
-                        controller: _tabController,
-                        children: [
-                          ListView(
-                            padding: EdgeInsets.zero,
-                            children: <Widget>[
-                              PostWidget(
-                                userName: "Võ Văn Duy",
-                                createdAt: "12Thang6,2025",
-                                postContent: "Núi phú sĩ",
-                                totalLikes: 5,
-                                totalComments: 20,
-                                totalShares: 20,
-                                totalMarks: 20,
-                                imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
-                              ),
-                              PostWidget(
-                                userName: "Võ Văn Duy",
-                                createdAt: "12Thang6,2025",
-                                postContent: "Núi phú sĩ",
-                                totalLikes: 5,
-                                totalComments: 20,
-                                totalShares: 20,
-                                totalMarks: 20,
-                                imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
-                              ),
-                              PostWidget(
-                                userName: "Võ Văn Duy",
-                                createdAt: "12Thang6,2025",
-                                postContent: "Núi phú sĩ",
-                                totalLikes: 5,
-                                totalComments: 20,
-                                totalShares: 20,
-                                totalMarks: 20,
-                                imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
-                              ),
-                            ],
-                          ),
-                          ListView(
-                            padding: EdgeInsets.zero,
-                            children: <Widget>[
-                              Center(child: Text('Lượt bình luận'))
-                            ],
-                          ),
-                          ListView(
-                            padding: EdgeInsets.zero,
-                            children: <Widget>[
-                              Center(child: Text('Bài viết'))
-                            ],
-                          ),
-                          ListView(
-                            padding: EdgeInsets.zero,
-                            children: <Widget>[
-                              Center(child: Text('Lượt thích'))
-                            ],
-                          ),
-                          ListView(
-                            padding: EdgeInsets.zero,
-                            children: <Widget>[
-                              Center(child: Text('Phương tiện'))
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                    
                   ],
                 ),
               ),
+              SizedBox(height: 24),
+              // Đặt TabBar ở đây
+              TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                tabs: [
+                  Tab(child: Text('Bài đăng', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
+                  Tab(child: Text('Lượt bình luận', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
+                  Tab(child: Text('Bài viết', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
+                  Tab(child: Text('Lượt thích', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
+                  Tab(child: Text('Phương tiện', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),),),
+                ],
+                labelColor: Color.fromRGBO(38, 37, 43, 1),
+                indicatorColor: Color.fromRGBO(119, 82, 254, 1),
+                indicatorPadding: EdgeInsets.zero,
+                tabAlignment: TabAlignment.start,
+              ),
+              SizedBox(
+                height: 400, // điều chỉnh chiều cao tùy ý
+                child:TabBarView(
+                    controller: _tabController,
+                    children: [
+                      ListView(
+                        padding: EdgeInsets.zero,
+                        children: <Widget>[
+                          PostWidget(
+                            userName: "Võ Văn Duy",
+                            createdAt: "12Thang6,2025",
+                            postContent: "Núi phú sĩ",
+                            totalLikes: 5,
+                            totalComments: 20,
+                            totalShares: 20,
+                            totalMarks: 20,
+                            imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
+                          ),
+                          PostWidget(
+                            userName: "Võ Văn Duy",
+                            createdAt: "12Thang6,2025",
+                            postContent: "Núi phú sĩ",
+                            totalLikes: 5,
+                            totalComments: 20,
+                            totalShares: 20,
+                            totalMarks: 20,
+                            imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
+                          ),
+                          PostWidget(
+                            userName: "Võ Văn Duy",
+                            createdAt: "12Thang6,2025",
+                            postContent: "Núi phú sĩ",
+                            totalLikes: 5,
+                            totalComments: 20,
+                            totalShares: 20,
+                            totalMarks: 20,
+                            imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
+                          ),
+                        ],
+                      ),
+                      ListView(
+                        padding: EdgeInsets.zero,
+                        children: <Widget>[
+                          Center(child: Text('Lượt bình luận'))
+                        ],
+                      ),
+                      ListView(
+                        padding: EdgeInsets.zero,
+                        children: <Widget>[
+                          Center(child: Text('Bài viết'))
+                        ],
+                      ),
+                      ListView(
+                        padding: EdgeInsets.zero,
+                        children: <Widget>[
+                          Center(child: Text('Lượt thích'))
+                        ],
+                      ),
+                      ListView(
+                        padding: EdgeInsets.zero,
+                        children: <Widget>[
+                          Center(child: Text('Phương tiện'))
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
             ],
           ),
         ),

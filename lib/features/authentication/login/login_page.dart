@@ -10,6 +10,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  bool passwordObscured = true;
+  
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
@@ -90,12 +92,18 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                             ),
                             TextField(
+                              obscureText: passwordObscured,
                               decoration: InputDecoration(
-                                suffixIcon: IconButton(
-                                  padding: EdgeInsetsDirectional.only(end: 12),
-                                  icon: Icon(Icons.visibility),
-                                  onPressed: () {},
+                                suffixIcon:IconButton(
+                                  padding: EdgeInsetsDirectional.only(end: 1),
+                                  icon: Icon(passwordObscured ? Icons.visibility_off : Icons.visibility),
+                                  onPressed: () {
+                                    setState(() {
+                                      passwordObscured = !passwordObscured;
+                                    });
+                                  },
                                 ),
+                    
                                 border: OutlineInputBorder(),
                                 hintText: "Nhập Mật khẩu",
                               ),

@@ -10,6 +10,19 @@ class EditResume extends StatefulWidget {
 class _EditResumeState extends State<EditResume> {
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Color.fromRGBO(38, 37, 43, 1),),
+          onPressed: () => {
+
+          },
+        ),
+        title: Text('Chỉnh sửa hồ sơ'),
+        actions: [
+          ElevatedButton(onPressed: () => {}, child: Text('Lưu'))
+        ],
+      ),
+    );
   }
 }
