@@ -190,35 +190,21 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                         padding: EdgeInsets.zero,
                         children: <Widget>[
                           PostWidget(
-                            userName: "Võ Văn Duy",
-                            createdAt: "12Thang6,2025",
-                            postContent: "Núi phú sĩ",
-                            totalLikes: 5,
-                            totalComments: 20,
-                            totalShares: 20,
-                            totalMarks: 20,
-                            imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
-                          ),
-                          PostWidget(
-                            userName: "Võ Văn Duy",
-                            createdAt: "12Thang6,2025",
-                            postContent: "Núi phú sĩ",
-                            totalLikes: 5,
-                            totalComments: 20,
-                            totalShares: 20,
-                            totalMarks: 20,
-                            imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
-                          ),
-                          PostWidget(
-                            userName: "Võ Văn Duy",
-                            createdAt: "12Thang6,2025",
-                            postContent: "Núi phú sĩ",
-                            totalLikes: 5,
-                            totalComments: 20,
-                            totalShares: 20,
-                            totalMarks: 20,
-                            imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
-                          ),
+                          userName: "Võ Văn Duy",
+                          createdAt: "12Thang6,2025",
+                          postContent: "Núi phú sĩ",
+                          totalLikes: 5,
+                          totalComments: 20,
+                          totalShares: 20,
+                          totalMarks: 20, 
+                          imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
+                          onPostTap: _navigateToPostDetail,
+                          onImageTap: () => _handleImageTap('https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg'),
+                          onLikeTap: _handleLikeTap,
+                          onCommentTap: _handleCommentTap,
+                          onShareTap: _handleShareTap,
+                          onBookmarkTap: _handleBookmarkTap,
+                        ),
                         ],
                       ),
                       ListView(
@@ -254,4 +240,21 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
       ),
     );
   }
+
+  void _navigateToPostDetail() {
+  }
+
+  void _handleLikeTap() {
+  }
+
+  void _handleCommentTap() {
+  }
+
+  void _handleShareTap() {
+  }
+
+  void _handleBookmarkTap() {
+  }
+  
+  _handleImageTap(String imageUrl) {}
 }

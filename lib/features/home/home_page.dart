@@ -1,6 +1,6 @@
-
 import 'package:flutter/material.dart';
 import 'package:media_mobile/features/home/widgets/postwidget.dart';
+import 'package:media_mobile/features/postDetails/post_details_page.dart';
 
 class HomePage extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
@@ -11,6 +11,32 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  void _navigateToPostDetail() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PostDetailPage()),
+    );
+  }
+
+  void _handleImageTap(String imageUrl) {
+    // Xử lý sự kiện khi nhấp vào imageContent
+  }
+
+  void _handleLikeTap() {
+    // Xử lý sự kiện khi nhấp vào icon like
+  }
+
+  void _handleCommentTap() {
+    // Xử lý sự kiện khi nhấp vào icon comment
+  }
+
+  void _handleShareTap() {
+    // Xử lý sự kiện khi nhấp vào icon share
+  }
+
+  void _handleBookmarkTap() {
+    // Xử lý sự kiện khi nhấp vào icon bookmark
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +108,12 @@ class _HomePageState extends State<HomePage> {
                     totalShares: 20,
                     totalMarks: 20, 
                     imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
+                    onPostTap: _navigateToPostDetail,
+                    onImageTap: () => _handleImageTap('https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg'),
+                    onLikeTap: _handleLikeTap,
+                    onCommentTap: _handleCommentTap,
+                    onShareTap: _handleShareTap,
+                    onBookmarkTap: _handleBookmarkTap,
                   ),
                   PostWidget(
                     userName: "Trần trọng lực",
@@ -91,37 +123,13 @@ class _HomePageState extends State<HomePage> {
                     totalComments: 20,
                     totalShares: 20,
                     totalMarks: 20, 
-                    imageContent: 'https://scontent.fsgn2-11.fna.fbcdn.net/v/t39.30808-6/449075311_858182246346880_2844809673380097241_n.jpg?_nc_cat=1&ccb=1-7&_nc_sid=127cfc&_nc_ohc=J-F4cSwochUQ7kNvgGJHKRl&_nc_ht=scontent.fsgn2-11.fna&oh=00_AYC2g2mnCGmhkcXREVCVrc96QR1ocTLnR-og3sh-VxLfZQ&oe=66830373',
-                  ),
-                  PostWidget(
-                    userName: "BongDa24h",
-                    createdAt: "12Thang6,2003",
-                    postContent: "Rất nhiều người đã tắt máy sau khoảnh khắc này...",
-                    totalLikes: 5,
-                    totalComments: 20,
-                    totalShares: 20,
-                    totalMarks: 20, 
-                    imageContent: 'https://scontent.fsgn2-11.fna.fbcdn.net/v/t39.30808-6/449109017_876930851129592_3505890860484888784_n.jpg?_nc_cat=1&ccb=1-7&_nc_sid=127cfc&_nc_ohc=knoC0KOZyrsQ7kNvgGvo2Of&_nc_ht=scontent.fsgn2-11.fna&oh=00_AYCRPqFApjMVu_s5112u-jjY263INCZ8CNfK5fMQdpB2Lg&oe=6682F537',
-                  ),
-                  PostWidget(
-                    userName: "Anime - My Heart",
-                    createdAt: "12Thang6,2003",
-                    postContent: "Zen thật sự rất thương ông của mình 😢",
-                    totalLikes: 5,
-                    totalComments: 20,
-                    totalShares: 20,
-                    totalMarks: 20, 
-                    imageContent: 'https://scontent.fsgn2-11.fna.fbcdn.net/v/t39.30808-6/449064039_886112986879405_994842464257917050_n.jpg?_nc_cat=1&ccb=1-7&_nc_sid=127cfc&_nc_ohc=al9CPt_64XIQ7kNvgFXE7Pj&_nc_ht=scontent.fsgn2-11.fna&oh=00_AYAbQlwsoa6_KQ6gDXUewtKGhVmFakSGY-m55d68nxV_MQ&oe=66830C0B',
-                  ),
-                  PostWidget(
-                    userName: "BongDa21h",
-                    createdAt: "12Thang6,2003",
-                    postContent: "Liều ăn nhiều. Thành quả của ông cháu may mắn hôm qua 🤳",
-                    totalLikes: 5,
-                    totalComments: 20,
-                    totalShares: 20,
-                    totalMarks: 20, 
-                    imageContent: 'https://scontent.fsgn2-11.fna.fbcdn.net/v/t39.30808-6/449034864_874335811389096_5112525695222335557_n.jpg?stp=dst-jpg_p526x296&_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=9D-jzjECJ_0Q7kNvgENMGjw&_nc_ht=scontent.fsgn2-11.fna&oh=00_AYBphcdM9r2dXezvH4i050GxnowqAhzyYfohXgVFJYe7Pw&oe=66830424',
+                    imageContent: 'https://i.imgflip.com/7eb085.jpg',
+                    onPostTap: _navigateToPostDetail,
+                    onImageTap: () => _handleImageTap('https://i.imgflip.com/7eb085.jpg'),
+                    onLikeTap: _handleLikeTap,
+                    onCommentTap: _handleCommentTap,
+                    onShareTap: _handleShareTap,
+                    onBookmarkTap: _handleBookmarkTap,
                   ),
                   // Thêm các PostWidget khác nếu cần
                 ],
@@ -137,17 +145,13 @@ class _HomePageState extends State<HomePage> {
                     totalComments: 20,
                     totalShares: 20,
                     totalMarks: 20, 
-                    imageContent: 'https://scontent.fsgn2-11.fna.fbcdn.net/v/t39.30808-6/449064039_886112986879405_994842464257917050_n.jpg?_nc_cat=1&ccb=1-7&_nc_sid=127cfc&_nc_ohc=al9CPt_64XIQ7kNvgFXE7Pj&_nc_ht=scontent.fsgn2-11.fna&oh=00_AYAbQlwsoa6_KQ6gDXUewtKGhVmFakSGY-m55d68nxV_MQ&oe=66830C0B',
-                  ),
-                  PostWidget(
-                    userName: "BongDa21h",
-                    createdAt: "12Thang6,2003",
-                    postContent: "Liều ăn nhiều. Thành quả của ông cháu may mắn hôm qua 🤳",
-                    totalLikes: 5,
-                    totalComments: 20,
-                    totalShares: 20,
-                    totalMarks: 20, 
-                    imageContent: 'https://scontent.fsgn2-11.fna.fbcdn.net/v/t39.30808-6/449034864_874335811389096_5112525695222335557_n.jpg?stp=dst-jpg_p526x296&_nc_cat=102&ccb=1-7&_nc_sid=833d8c&_nc_ohc=9D-jzjECJ_0Q7kNvgENMGjw&_nc_ht=scontent.fsgn2-11.fna&oh=00_AYBphcdM9r2dXezvH4i050GxnowqAhzyYfohXgVFJYe7Pw&oe=66830424',
+                    imageContent: 'https://images.wallpapersden.com/image/download/zenitsu-agatsuma_65696_2880x1800.jpg',
+                    onPostTap: _navigateToPostDetail,
+                    onImageTap: () => _handleImageTap('https://images.wallpapersden.com/image/download/zenitsu-agatsuma_65696_2880x1800.jpg'),
+                    onLikeTap: _handleLikeTap,
+                    onCommentTap: _handleCommentTap,
+                    onShareTap: _handleShareTap,
+                    onBookmarkTap: _handleBookmarkTap,
                   ),
                 ],
               ),
