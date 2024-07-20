@@ -1,22 +1,62 @@
 import 'package:flutter/material.dart';
+import 'package:media_mobile/features/authentication/models/user_model.dart';
+import 'package:media_mobile/features/home/fullPost_model.dart';
 import 'package:media_mobile/features/home/widgets/postwidget.dart';
+import 'package:media_mobile/features/post/post_data_source.dart';
+import 'package:media_mobile/features/post/post_form.dart';
+import 'package:media_mobile/features/post/update_post_form.dart';
 import 'package:media_mobile/features/postDetails/post_details_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
-  const HomePage({super.key, required this.scaffoldKey});
+  final UserModel user;
+  const HomePage({super.key, required this.scaffoldKey, required this.user});
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  void _navigateToPostDetail() {
+  late Future<List<FullPostModel>> _futurePosts;
+  String id = '';
+  @override
+  void initState() {
+    super.initState();
+    _futurePosts = getListPosts();
+  }
+
+  Future<List<FullPostModel>> getListPosts() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    id = prefs.getString('id').toString();
+    return await PostDataSource().getAllPosts(prefs.getString('token').toString());
+  }
+
+  Future<void> _refreshPosts() async {
+    setState(() {
+      _futurePosts = getListPosts();
+    });
+  }
+
+  void _navigateToPostDetail(FullPostModel post) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => PostDetailPage()),
+      MaterialPageRoute(
+        builder: (context) => PostDetailPage(
+          post: post, 
+          userId: id,
+          onOptionTap: () => _showOptions(context, post.postId!),
+          onImageTap: () => _handleImageTap('https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg'),
+          onLikeTap: _handleLikeTap,
+          onCommentTap: _handleCommentTap,
+          onShareTap: _handleShareTap,
+          onBookmarkTap: _handleBookmarkTap,
+          )
+        ),
     );
   }
+
+
 
   void _handleImageTap(String imageUrl) {
     // Xử lý sự kiện khi nhấp vào imageContent
@@ -37,6 +77,132 @@ class _HomePageState extends State<HomePage> {
   void _handleBookmarkTap() {
     // Xử lý sự kiện khi nhấp vào icon bookmark
   }
+
+  void _showOptions(BuildContext context, String postId) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                leading: Icon(Icons.edit, color: Colors.black),
+                title: Text('Chỉnh sửa bài đăng', style: TextStyle(color: Colors.black),),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatePostForm(user: widget.user, postId: postId)));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.delete, color: Colors.red),
+                title: Text('Xóa bài đăng', style: TextStyle(color: Colors.red),),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showDeleteConfirmationDialog(context, postId);
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, String postId) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Xác nhận xóa'),
+          content: Text('Bạn chắc chắn muốn xóa bài đăng này chứ?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text('Hủy'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                _deletePost(postId);
+              },
+              child: Text('Xóa', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showLoadingDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text(message),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _updateLoadingDialog(BuildContext context, IconData icon, Color color, String successMessage, String errorMessage) {
+    Navigator.pop(context); // Close the current dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          content: Row(
+            children: [
+              Icon(icon, color: color),
+              SizedBox(width: 20),
+              Text(icon == Icons.check ? successMessage : errorMessage),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => {},
+              child: Text('Ok'),
+            ),
+          ],
+        );
+      },
+    ).then((_) {
+      if (icon == Icons.check) {
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  Future<void> _deletePost(String postId) async {
+    _showLoadingDialog(context, 'Đang xóa');
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    var result = await PostDataSource().deletePost(postId, prefs.getString('id').toString(), prefs.getString('token').toString());
+    if(result == true) {
+      _updateLoadingDialog(context, Icons.check, Colors.green, 'Xóa thành công!', 'Xóa thất bại!');
+      _refreshPosts();
+    } else {
+      _updateLoadingDialog(context, Icons.close, Colors.red, 'Xóa thành công!', 'Xóa thất bại!');
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -96,63 +262,44 @@ class _HomePageState extends State<HomePage> {
           },
           body: TabBarView(
             children: [
-              ListView(
-                padding: EdgeInsets.zero,
-                children: <Widget>[
-                  PostWidget(
-                    userName: "Võ Văn Duy",
-                    createdAt: "12Thang6,2025",
-                    postContent: "Núi phú sĩ",
-                    totalLikes: 5,
-                    totalComments: 20,
-                    totalShares: 20,
-                    totalMarks: 20, 
-                    imageContent: 'https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg',
-                    onPostTap: _navigateToPostDetail,
-                    onImageTap: () => _handleImageTap('https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg'),
-                    onLikeTap: _handleLikeTap,
-                    onCommentTap: _handleCommentTap,
-                    onShareTap: _handleShareTap,
-                    onBookmarkTap: _handleBookmarkTap,
-                  ),
-                  PostWidget(
-                    userName: "Trần trọng lực",
-                    createdAt: "13Thang6,2023",
-                    postContent: "Kem nào mà chả là kem 🤡",
-                    totalLikes: 5,
-                    totalComments: 20,
-                    totalShares: 20,
-                    totalMarks: 20, 
-                    imageContent: 'https://i.imgflip.com/7eb085.jpg',
-                    onPostTap: _navigateToPostDetail,
-                    onImageTap: () => _handleImageTap('https://i.imgflip.com/7eb085.jpg'),
-                    onLikeTap: _handleLikeTap,
-                    onCommentTap: _handleCommentTap,
-                    onShareTap: _handleShareTap,
-                    onBookmarkTap: _handleBookmarkTap,
-                  ),
-                  // Thêm các PostWidget khác nếu cần
-                ],
+              RefreshIndicator(
+                onRefresh: _refreshPosts,
+                child: FutureBuilder<List<FullPostModel>>(
+                  future: _futurePosts, 
+                  builder: (context, postsSnapshot) {
+                    if (postsSnapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    }
+                    if (!postsSnapshot.hasData || postsSnapshot.data!.isEmpty) {
+                      return Center(child: Text('Không tìm thấy bài đăng nào.'));
+                    }
+
+                    return ListView.builder(
+                      itemCount: postsSnapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        final post = postsSnapshot.data![index];
+                        return PostWidget(
+                          post: post,
+                          id: id,
+                          onOptionTap: () => _showOptions(context, post.postId!),
+                          onPostTap: () => _navigateToPostDetail(post),
+                          onImageTap: () => _handleImageTap('https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg'),
+                          onLikeTap: _handleLikeTap,
+                          onCommentTap: _handleCommentTap,
+                          onShareTap: _handleShareTap,
+                          onBookmarkTap: _handleBookmarkTap,
+                        );
+                      },
+                    );
+                  },
+                ),
               ),
               ListView(
                 padding: EdgeInsets.zero,
                 children: [
-                  PostWidget(
-                    userName: "Anime - My Heart",
-                    createdAt: "12Thang6,2003",
-                    postContent: "Zen thật sự rất thương ông của mình 😢",
-                    totalLikes: 5,
-                    totalComments: 20,
-                    totalShares: 20,
-                    totalMarks: 20, 
-                    imageContent: 'https://images.wallpapersden.com/image/download/zenitsu-agatsuma_65696_2880x1800.jpg',
-                    onPostTap: _navigateToPostDetail,
-                    onImageTap: () => _handleImageTap('https://images.wallpapersden.com/image/download/zenitsu-agatsuma_65696_2880x1800.jpg'),
-                    onLikeTap: _handleLikeTap,
-                    onCommentTap: _handleCommentTap,
-                    onShareTap: _handleShareTap,
-                    onBookmarkTap: _handleBookmarkTap,
-                  ),
+                  
                 ],
               ),
             ],

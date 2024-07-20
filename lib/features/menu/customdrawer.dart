@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:media_mobile/core/shared_preferences/shared_pref.dart';
+import 'package:media_mobile/features/authentication/models/user_model.dart';
 import 'package:media_mobile/features/resume/resume_page.dart';
 
 class CustomDrawer extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
-  const CustomDrawer({super.key, required this.scaffoldKey});
+  final UserModel user;
+  const CustomDrawer({super.key, required this.scaffoldKey, required this.user});
 
   @override
   State<CustomDrawer> createState() => _CustomDrawerState();
 }
 
 class _CustomDrawerState extends State<CustomDrawer> {
-  
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -29,11 +31,11 @@ class _CustomDrawerState extends State<CustomDrawer> {
                 children: [
                   CircleAvatar(
                     radius: 40,
-                    backgroundImage: AssetImage('assets/images/Toka.jpg'),
+                    backgroundImage: widget.user.personalImage != null ? NetworkImage(widget.user.personalImage!) : NetworkImage('https://static.vecteezy.com/system/resources/previews/000/376/355/original/user-management-vector-icon.jpg'),
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'Võ Văn Duy',
+                    widget.user.userName!,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: Color.fromRGBO(38, 37, 43, 1),
@@ -102,9 +104,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
           ListTile(
             leading: Icon(Icons.logout),
             title: Text('Đăng xuất'),
-            onTap: () {
-              // Add your onTap code here!
-            },
+            onTap: () => logOut(context),
           ),
         ],
       ),

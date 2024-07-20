@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:media_mobile/features/authentication/models/user_model.dart';
@@ -10,19 +9,37 @@ import 'package:media_mobile/features/resume/data_sources/resume_data_sources.da
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class PostForm extends StatefulWidget {
+class UpdatePostForm extends StatefulWidget {
   final UserModel user;
-  const PostForm({super.key, required this.user});
+  final String postId;
+  const UpdatePostForm({super.key, required this.user, required this.postId});
 
   @override
-  State<PostForm> createState() => _PostFormState();
+  State<UpdatePostForm> createState() => _UpdatePostFormState();
 }
 
-class _PostFormState extends State<PostForm> {
+class _UpdatePostFormState extends State<UpdatePostForm> {
   final ImagePicker _picker = ImagePicker();
   var formKey = GlobalKey<FormState>();
   final TextEditingController _inputPostController = TextEditingController();
   String postImage = '';
+  String postImageUpdate = '';
+  FullPostModel? post;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPost();
+  }
+
+  Future<void> _loadPost() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    post = await PostDataSource().getPost(widget.postId, prefs.getString('token').toString());
+    setState(() {
+      _inputPostController.text = post?.postContent ?? '';
+      postImageUpdate = post?.postImageUrl ?? '';
+    });
+  }
 
   void _showLoadingDialog(BuildContext context, String message) {
     showDialog(
@@ -108,16 +125,13 @@ class _PostFormState extends State<PostForm> {
     if (status.isGranted) {
       final XFile? image = await _picker.pickImage(source: source);
       if (image != null) {
-        // Handle the selected image
         setState(() {
           postImage = image.path;
         });
       }
     } else if (status.isDenied) {
-      // The permission was denied. Show a message or handle the error.
       print('Camera permission denied');
     } else if (status.isPermanentlyDenied) {
-      // The permission was permanently denied. Direct the user to the app settings.
       openAppSettings();
     }
   }
@@ -126,24 +140,40 @@ class _PostFormState extends State<PostForm> {
     _showLoadingDialog(context, 'Đang đăng trạng thái');
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    if(postImage != '') {
+    if (postImage != '') {
       postImage = await ResumeDataSource().uploadFile(postImage, prefs.getString('token').toString());
     } 
 
     var postContent = _inputPostController.text;
 
-    var result = await PostDataSource().createPost(
-      PostModel(postContent: postContent, postImageUrl: postImage, userId: prefs.getString('id').toString()),
-      prefs.getString('token').toString()
+    var result = await PostDataSource().updatePost(
+      FullPostModel(
+        postId: widget.postId,
+        postContent: postContent,
+        postImageUrl: postImage == '' ? postImageUpdate : postImage,
+        postVideoUrl: '',
+        postFileUrl: '',
+        postTotalLikes: '0',
+        postTotalComments: '0',
+        postTotalShares: '0',
+        postTotalMarks: '0',
+        userId: prefs.getString('id').toString(),
+        userName: '',
+        imageUser: '',
+        replyId: '',
+        replierName: '',
+        createdAt: '',
+      ),
+      prefs.getString('token').toString(),
     );
 
-    if(result == true) {
-      _updateLoadingDialog(context, Icons.check, Colors.green, 'Đăng thành công!', 'Đăng thất bại!');
+    if (result == true) {
+      _updateLoadingDialog(context, Icons.check, Colors.green, 'Cập nhật thành công!', 'Cập nhật thất bại!');
     } else {
-      _updateLoadingDialog(context, Icons.close, Colors.red, 'Đăng thành công!', 'Đăng thất bại!');
+      _updateLoadingDialog(context, Icons.close, Colors.red, 'Cập nhật thành công!', 'Cập nhật thất bại!');
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     double keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
@@ -153,18 +183,16 @@ class _PostFormState extends State<PostForm> {
       appBar: AppBar(
         backgroundColor: Color.fromRGBO(244, 244, 244, 1),
         leading: GestureDetector(
-          onTap: () => {
-            Navigator.pop(context)
-          },
+          onTap: () => Navigator.pop(context),
           child: Icon(Icons.arrow_back, color: Color.fromRGBO(38, 37, 43, 1), size: 24,),
         ),
-        title: Text('Viết bài đăng', style: TextStyle(color: Color.fromRGBO(38, 37, 43, 1), fontSize: 20, fontWeight: FontWeight.bold),),
+        title: Text('Chỉnh sửa bài đăng', style: TextStyle(color: Color.fromRGBO(38, 37, 43, 1), fontSize: 20, fontWeight: FontWeight.bold),),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 10),
             child: ElevatedButton(
               onPressed: _saveData, 
-              child: Text('Đăng', style: TextStyle(color: Color.fromRGBO(244, 244, 244, 1), fontSize: 16, fontWeight: FontWeight.w600)),
+              child: Text('Cập nhật', style: TextStyle(color: Color.fromRGBO(244, 244, 244, 1), fontSize: 16, fontWeight: FontWeight.w600)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Color.fromRGBO(119, 82, 254, 1),
                 padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5)
@@ -181,7 +209,7 @@ class _PostFormState extends State<PostForm> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if(widget.user.personalImage != null)
+                if(widget.user.personalImage != null || widget.user.personalImage != '')
                   ClipOval(
                     child: Image.network(
                       widget.user.personalImage!,
@@ -201,6 +229,7 @@ class _PostFormState extends State<PostForm> {
                 SizedBox(width: 10),
                 Expanded(
                   child: Form(
+                    key: formKey,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -223,19 +252,30 @@ class _PostFormState extends State<PostForm> {
                           maxLines: null,
                         ),
                         SizedBox(height: 10),
-                        if(postImage != '') 
+                        if (postImage != '') 
                           ConstrainedBox(
                             constraints: BoxConstraints(
-                              maxHeight: 500.0, // Đặt giới hạn chiều cao tối đa
-                              maxWidth: double.infinity, // Đặt giới hạn chiều rộng tối đa
+                              maxHeight: 500.0,
+                              maxWidth: double.infinity,
                             ),
                             child: FittedBox(
-                              fit: BoxFit.contain, // Đảm bảo ảnh không bị cắt xén và duy trì tỷ lệ gốc
+                              fit: BoxFit.contain,
                               child: Image.file(
                                 File(postImage),
                               ),
                             ),
                           )
+                        else
+                         if(postImageUpdate != '')  ConstrainedBox(
+                            constraints: BoxConstraints(
+                              maxHeight: 500.0,
+                              maxWidth: double.infinity,
+                            ),
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: Image.network(postImageUpdate),
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -254,14 +294,14 @@ class _PostFormState extends State<PostForm> {
             color: Color.fromRGBO(244, 244, 244, 1),
             border: Border(
               top: BorderSide(
-                color: Color.fromRGBO(201, 200, 202, 1), // Màu viền
+                color: Color.fromRGBO(201, 200, 202, 1),
                 width: 1.0,
               ),
             ),
           ),
           child: BottomAppBar(
-            color: Colors.transparent, // Đặt màu nền trong suốt để chỉ thấy màu của Container
-            elevation: 0, // Loại bỏ shadow
+            color: Colors.transparent,
+            elevation: 0,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
@@ -290,7 +330,7 @@ class _PostFormState extends State<PostForm> {
                 IconButton(
                   icon: Icon(Icons.more_horiz, color: Color.fromRGBO(119, 82, 254, 1)),
                   onPressed: () {
-                    // Handle gif selection
+                    // Handle more options
                   },
                 ),
               ],

@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:media_mobile/features/authentication/models/user_model.dart';
 import 'package:media_mobile/features/follow/followpage.dart';
 import 'package:media_mobile/features/home/home_page.dart';
 import 'package:media_mobile/features/menu/customdrawer.dart';
 import 'package:media_mobile/features/notification/notificationpage.dart';
 import 'package:media_mobile/features/post/post_form.dart';
 import 'package:media_mobile/features/search/searchpage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -22,6 +26,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   late AnimationController _controller;
   late Animation<double> _offsetAnimation;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  UserModel user = UserModel.userEmpty();
 
   @override
   void initState() {
@@ -34,6 +39,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
       end: 0.0,
     ).animate(_controller);
     super.initState();
+    _getCurrentUser();
   }
 
   void _onItemTapped(int index) {
@@ -48,11 +54,18 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
     super.dispose();
   }
 
+  Future<void> _getCurrentUser() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    String strUser = pref.getString('user')!;
+    setState(() {
+      user = UserModel.fromJson(jsonDecode(strUser));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Color.fromRGBO(244, 244, 244, 1),
       body: NotificationListener<UserScrollNotification>(
         onNotification: (notification) {
           if (notification.direction == ScrollDirection.forward) {
@@ -75,14 +88,14 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
         child: IndexedStack(
           index: _selectedIndex,
           children: [
-            HomePage(scaffoldKey: _scaffoldKey),
+            HomePage(scaffoldKey: _scaffoldKey, user: user),
             FriendsPage(scaffoldKey: _scaffoldKey),
             NotificationsPage(scaffoldKey: _scaffoldKey,),
             SearchPage(scaffoldKey: _scaffoldKey,),
           ],
         ),
       ),
-      drawer: CustomDrawer(scaffoldKey: _scaffoldKey,),
+      drawer: CustomDrawer(scaffoldKey: _scaffoldKey, user: user),
       bottomNavigationBar: SizeTransition(
         sizeFactor: _offsetAnimation,
         child: BottomNavigationBar(
@@ -151,7 +164,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
               onPressed: () => {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const PostForm()),
+                  MaterialPageRoute(builder: (context) => PostForm(user: user,)),
                 )
               },
               backgroundColor: Color.fromRGBO(119, 82, 254, 1),
