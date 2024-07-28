@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:media_mobile/core/shared_preferences/shared_pref.dart';
 import 'package:media_mobile/features/authentication/data_sources/auth_data_sources.dart';
@@ -203,17 +205,17 @@ class _EditResumeState extends State<EditResume> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromRGBO(244, 244, 244, 1),
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Color.fromRGBO(38, 37, 43, 1)),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.primary),
           onPressed: () => {Navigator.pop(context, true)},
         ),
         title: Text(
           'Chỉnh sửa hồ sơ',
           style: TextStyle(
-            color: Color.fromRGBO(38, 37, 43, 1),
+            color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.bold,
             fontSize: 20
           ),
@@ -223,7 +225,7 @@ class _EditResumeState extends State<EditResume> {
             onPressed: _saveData,
             child: Text(
               'Lưu',
-              style: TextStyle(color: Color.fromRGBO(244, 244, 244, 1)),
+              style: TextStyle(color: Colors.white),
             ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Color.fromRGBO(119, 82, 254, 1),
@@ -253,13 +255,42 @@ class _EditResumeState extends State<EditResume> {
                         fit: BoxFit.cover,
                       )
                     else
-                      widget.user.backgroundImage != null ? Image.network(
-                        widget.user.backgroundImage!,
+                      widget.user.backgroundImage != null ? 
+                      CachedNetworkImage(
+                        imageUrl: widget.user.backgroundImage!,
+                        progressIndicatorBuilder: (_, url, download) {
+                          if(download.progress != null) {
+                            return const LinearProgressIndicator();
+                          }
+
+                          return Text('Đã tải xong');
+                        },
+                        cacheManager: CacheManager(
+                          Config(
+                            'customCacheKey',
+                            stalePeriod: const Duration(days: 7), // Thời gian cache là 7 ngày
+                            maxNrOfCacheObjects: 100, // Số lượng đối tượng tối đa trong cache
+                          ),
+                        ),
                         height: 150,
                         width: double.infinity,
                         fit: BoxFit.cover,
-                      ) : Image.network(
-                        'https://th.bing.com/th/id/OIP.izuUPw06Klw7NffcjplZ4gHaEK?rs=1&pid=ImgDetMain',
+                      ) : CachedNetworkImage(
+                        imageUrl: 'https://th.bing.com/th/id/OIP.izuUPw06Klw7NffcjplZ4gHaEK?rs=1&pid=ImgDetMain',
+                        progressIndicatorBuilder: (_, url, download) {
+                          if(download.progress != null) {
+                            return const LinearProgressIndicator();
+                          }
+
+                          return Text('Đã tải xong');
+                        },
+                        cacheManager: CacheManager(
+                          Config(
+                            'customCacheKey',
+                            stalePeriod: const Duration(days: 7), // Thời gian cache là 7 ngày
+                            maxNrOfCacheObjects: 100, // Số lượng đối tượng tối đa trong cache
+                          ),
+                        ),
                         height: 150,
                         width: double.infinity,
                         fit: BoxFit.cover,
@@ -272,7 +303,7 @@ class _EditResumeState extends State<EditResume> {
                       top: 60,
                       child: Icon(
                         Icons.camera_alt,
-                        color: Color.fromRGBO(244, 244, 244, 1),
+                        color: Colors.white,
                         size: 36,
                       ),
                     ),
@@ -304,13 +335,42 @@ class _EditResumeState extends State<EditResume> {
                         bottom: 20,
                         left: 10,
                         child: ClipOval(
-                          child: widget.user.personalImage != null ? Image.network(
-                            widget.user.personalImage!,
+                          child: widget.user.personalImage != null ? 
+                          CachedNetworkImage(
+                            imageUrl: widget.user.personalImage!,
+                            progressIndicatorBuilder: (_, url, download) {
+                              if(download.progress != null) {
+                                return const LinearProgressIndicator();
+                              }
+
+                              return Text('Đã tải xong');
+                            },
+                            cacheManager: CacheManager(
+                              Config(
+                                'customCacheKey',
+                                stalePeriod: const Duration(days: 7), // Thời gian cache là 7 ngày
+                                maxNrOfCacheObjects: 100, // Số lượng đối tượng tối đa trong cache
+                              ),
+                            ),
                             height: 64,
                             width: 64,
                             fit: BoxFit.cover,
-                          ) : Image.network(
-                            'https://static.vecteezy.com/system/resources/previews/000/376/355/original/user-management-vector-icon.jpg',
+                          ) : CachedNetworkImage(
+                            imageUrl: 'https://static.vecteezy.com/system/resources/previews/000/376/355/original/user-management-vector-icon.jpg',
+                            progressIndicatorBuilder: (_, url, download) {
+                              if(download.progress != null) {
+                                return const LinearProgressIndicator();
+                              }
+
+                              return Text('Đã tải xong');
+                            },
+                            cacheManager: CacheManager(
+                              Config(
+                                'customCacheKey',
+                                stalePeriod: const Duration(days: 7), // Thời gian cache là 7 ngày
+                                maxNrOfCacheObjects: 100, // Số lượng đối tượng tối đa trong cache
+                              ),
+                            ),
                             height: 64,
                             width: 64,
                             fit: BoxFit.cover,
@@ -329,7 +389,7 @@ class _EditResumeState extends State<EditResume> {
                         ),
                         child: Icon(
                           Icons.camera_alt,
-                          color: Color.fromRGBO(244, 244, 244, 1),
+                          color: Colors.white,
                           size: 24,
                         ),
                       ),
@@ -345,7 +405,7 @@ class _EditResumeState extends State<EditResume> {
                     Text(
                       'Tên người dùng',
                       style: TextStyle(
-                        color: Color.fromRGBO(119, 82, 254, 1),
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -353,24 +413,28 @@ class _EditResumeState extends State<EditResume> {
                     SizedBox(height: 5),
                     TextFormField(
                       controller: _userNameController,
-                      style: TextStyle(color: Color.fromRGBO(38, 37, 43, 1)),
+                      style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
-                        fillColor: Color.fromRGBO(244, 244, 244, 1),
+                        fillColor: Theme.of(context).colorScheme.background,
                         filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1
+                          ),
                         ),
                         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                         hintText: 'Tên người dùng',
-                        hintStyle: TextStyle(color: Color.fromRGBO(38, 37, 43, 0.3)),
+                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
                       ),
+                      cursorColor: Theme.of(context).colorScheme.primary,
                     ),
                     SizedBox(height: 20),
                     Text(
                       'Mô tả',
                       style: TextStyle(
-                        color: Color.fromRGBO(119, 82, 254, 1),
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -378,24 +442,28 @@ class _EditResumeState extends State<EditResume> {
                     SizedBox(height: 5),
                     TextFormField(
                       controller: _descriptionController,
-                      style: TextStyle(color: Color.fromRGBO(38, 37, 43, 1)),
+                      style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
-                        fillColor: Color.fromRGBO(244, 244, 244, 1),
+                        fillColor: Theme.of(context).colorScheme.background,
                         filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1
+                          ),
                         ),
                         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                         hintText: 'Mô tả',
-                        hintStyle: TextStyle(color: Color.fromRGBO(38, 37, 43, 0.3)),
+                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
                       ),
+                      cursorColor: Theme.of(context).colorScheme.primary,
                     ),
                     SizedBox(height: 20),
                     Text(
                       'Địa chỉ',
                       style: TextStyle(
-                        color: Color.fromRGBO(119, 82, 254, 1),
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -403,24 +471,28 @@ class _EditResumeState extends State<EditResume> {
                     SizedBox(height: 5),
                     TextFormField(
                       controller: _addressController,
-                      style: TextStyle(color: Color.fromRGBO(38, 37, 43, 1)),
+                      style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
-                        fillColor: Color.fromRGBO(244, 244, 244, 1),
+                        fillColor: Theme.of(context).colorScheme.background,
                         filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1
+                          ),
                         ),
                         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                         hintText: 'Địa chỉ',
-                        hintStyle: TextStyle(color: Color.fromRGBO(38, 37, 43, 0.3)),
+                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
                       ),
+                      cursorColor: Theme.of(context).colorScheme.primary,
                     ),
                     SizedBox(height: 20),
                     Text(
                       'Công việc',
                       style: TextStyle(
-                        color: Color.fromRGBO(119, 82, 254, 1),
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -428,18 +500,22 @@ class _EditResumeState extends State<EditResume> {
                     SizedBox(height: 5),
                     TextFormField(
                       controller: _jobController,
-                      style: TextStyle(color: Color.fromRGBO(38, 37, 43, 1)),
+                      style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.bold),
                       decoration: InputDecoration(
-                        fillColor: Color.fromRGBO(244, 244, 244, 1),
+                        fillColor: Theme.of(context).colorScheme.background,
                         filled: true,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(8),
-                          borderSide: BorderSide.none,
+                          borderSide: BorderSide(
+                            color: Theme.of(context).colorScheme.primary,
+                            width: 1
+                          ),
                         ),
                         contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                         hintText: 'Công việc',
-                        hintStyle: TextStyle(color: Color.fromRGBO(38, 37, 43, 0.3)),
+                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary),
                       ),
+                      cursorColor: Theme.of(context).colorScheme.primary,
                     ),
                   ],
                 ),

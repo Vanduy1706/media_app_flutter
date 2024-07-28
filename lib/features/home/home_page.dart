@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:media_mobile/features/authentication/models/user_model.dart';
+import 'package:media_mobile/features/comment/widget/comment_widget.dart';
 import 'package:media_mobile/features/home/fullPost_model.dart';
+import 'package:media_mobile/features/home/widgets/post_image_detail.dart';
 import 'package:media_mobile/features/home/widgets/postwidget.dart';
 import 'package:media_mobile/features/post/post_data_source.dart';
 import 'package:media_mobile/features/post/post_form.dart';
@@ -20,6 +22,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late Future<List<FullPostModel>> _futurePosts;
   String id = '';
+  bool _isLiked = false;
+
   @override
   void initState() {
     super.initState();
@@ -38,17 +42,18 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  void _navigateToPostDetail(FullPostModel post) {
+  void _navigateToPostDetail(FullPostModel post, UserModel user) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PostDetailPage(
-          post: post, 
+          post: post,
+          user: user,
           userId: id,
           onOptionTap: () => _showOptions(context, post.postId!),
-          onImageTap: () => _handleImageTap('https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg'),
+          onImageTap: () => _handleImageTap(context, post.postImageUrl!),
           onLikeTap: _handleLikeTap,
-          onCommentTap: _handleCommentTap,
+          onCommentTap: () => _handleCommentTap(post, user),
           onShareTap: _handleShareTap,
           onBookmarkTap: _handleBookmarkTap,
           )
@@ -58,16 +63,28 @@ class _HomePageState extends State<HomePage> {
 
 
 
-  void _handleImageTap(String imageUrl) {
-    // Xử lý sự kiện khi nhấp vào imageContent
+  void _handleImageTap(BuildContext context, String imageUrl) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FullScreenImage(imageUrl: imageUrl),
+      ),
+    );
   }
 
   void _handleLikeTap() {
-    // Xử lý sự kiện khi nhấp vào icon like
+    setState(() {
+      _isLiked = !_isLiked;
+    });
   }
 
-  void _handleCommentTap() {
-    // Xử lý sự kiện khi nhấp vào icon comment
+  void _handleCommentTap(FullPostModel post, UserModel user) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CommentForm(post: post, user: user)
+      )
+    );
   }
 
   void _handleShareTap() {
@@ -81,7 +98,7 @@ class _HomePageState extends State<HomePage> {
   void _showOptions(BuildContext context, String postId) {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.background,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(
           top: Radius.circular(20),
@@ -94,8 +111,8 @@ class _HomePageState extends State<HomePage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                leading: Icon(Icons.edit, color: Colors.black),
-                title: Text('Chỉnh sửa bài đăng', style: TextStyle(color: Colors.black),),
+                leading: Icon(Icons.edit, color: Theme.of(context).colorScheme.primary),
+                title: Text('Chỉnh sửa bài đăng', style: TextStyle(color: Theme.of(context).colorScheme.primary),),
                 onTap: () {
                   Navigator.pop(context);
                   Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatePostForm(user: widget.user, postId: postId)));
@@ -177,16 +194,13 @@ class _HomePageState extends State<HomePage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => {},
+              onPressed: () => Navigator.pop(context),
               child: Text('Ok'),
             ),
           ],
         );
       },
     ).then((_) {
-      if (icon == Icons.check) {
-        Navigator.pop(context);
-      }
     });
   }
 
@@ -209,7 +223,7 @@ class _HomePageState extends State<HomePage> {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        backgroundColor: Color.fromRGBO(244, 244, 244, 1),
+        backgroundColor: Theme.of(context).colorScheme.background,
         body: NestedScrollView(
           floatHeaderSlivers: true,
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
@@ -218,12 +232,12 @@ class _HomePageState extends State<HomePage> {
                 pinned: false,
                 floating: true,
                 snap: true,
-                backgroundColor: Color.fromRGBO(244, 244, 244, 1),
+                backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
                 leading: GestureDetector(
                   onTap: () => {
                     widget.scaffoldKey.currentState?.openDrawer()
                   },
-                  child: const Icon(Icons.account_circle, color: Color.fromRGBO(38, 37, 43, 1), size: 24,),
+                  child: Icon(Icons.account_circle, color: Theme.of(context).colorScheme.primary, size: 24,),
                 ),
                 title: Image(
                   image: AssetImage("assets/images/logo.png"),
@@ -234,12 +248,13 @@ class _HomePageState extends State<HomePage> {
                 actions: <Widget>[
                   GestureDetector(
                     onTap: () => {},
-                    child: const Icon(Icons.settings, color: Color.fromRGBO(38, 37, 43, 1), size: 24,),
+                    child: Icon(Icons.settings, color: Theme.of(context).colorScheme.primary, size: 24,),
                   ),
                   SizedBox(width: 10,)
                 ],
                 centerTitle: true,
                 bottom: TabBar(
+                  dividerColor: Theme.of(context).colorScheme.primary,
                   indicatorSize: TabBarIndicatorSize.tab,
                   indicatorColor: Color.fromRGBO(119, 82, 254, 1),
                   indicatorWeight: 3,
@@ -273,7 +288,14 @@ class _HomePageState extends State<HomePage> {
                       );
                     }
                     if (!postsSnapshot.hasData || postsSnapshot.data!.isEmpty) {
-                      return Center(child: Text('Không tìm thấy bài đăng nào.'));
+                      return RefreshIndicator(
+                        onRefresh: _refreshPosts,
+                        child: ListView(
+                          children: [
+                            Center(child: Text('Không tìm thấy bài đăng nào.')),
+                          ],
+                        )
+                      );
                     }
 
                     return ListView.builder(
@@ -284,10 +306,10 @@ class _HomePageState extends State<HomePage> {
                           post: post,
                           id: id,
                           onOptionTap: () => _showOptions(context, post.postId!),
-                          onPostTap: () => _navigateToPostDetail(post),
-                          onImageTap: () => _handleImageTap('https://www.tugo.com.vn/wp-content/uploads/nui-phu-si-ngon.jpg'),
+                          onPostTap: () => _navigateToPostDetail(post, widget.user),
+                          onImageTap: () => _handleImageTap(context, post.postImageUrl!),
                           onLikeTap: _handleLikeTap,
-                          onCommentTap: _handleCommentTap,
+                          onCommentTap: () => _handleCommentTap(post, widget.user),
                           onShareTap: _handleShareTap,
                           onBookmarkTap: _handleBookmarkTap,
                         );
@@ -309,3 +331,5 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
+
+

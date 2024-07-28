@@ -30,7 +30,7 @@ class FollowWidget extends StatelessWidget {
                     ),  
                   )
                 ),
-                Text(nameFollowUser, style: TextStyle(color: Color.fromRGBO(38, 37, 43, 1), fontWeight: FontWeight.w500, fontSize: 16),)
+                Text(nameFollowUser, style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w500, fontSize: 16),)
               ],
             ),
             ElevatedButton(
@@ -40,7 +40,7 @@ class FollowWidget extends StatelessWidget {
               child: Text(
                 'Hủy theo dõi',
                 style: TextStyle(
-                  color: Color.fromRGBO(244, 244, 244, 1),
+                  color: Colors.white,
                   fontWeight: FontWeight.w500,
                   fontSize: screenWidth * 0.04, // 4% of screen width as font size
                 ),

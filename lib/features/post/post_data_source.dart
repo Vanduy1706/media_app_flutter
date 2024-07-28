@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:media_mobile/features/home/fullPost_model.dart';
+import 'package:media_mobile/features/post/post_liker_model.dart';
 import 'package:media_mobile/features/post/post_model.dart';
 class PostDataSource {
   http.Client client = new http.Client();
@@ -28,7 +29,7 @@ class PostDataSource {
       "postId": "",
       "postContent": postBody.postContent,
       "postImageUrl": postBody.postImageUrl,
-      "postVideoUrl": "",
+      "postVideoUrl": postBody.postVideoUrl,
       "postFileUrl": "",
       "postTotalLikes": 0,
       "postTotalComments": 0,
@@ -79,7 +80,7 @@ class PostDataSource {
       "postId": post.postId,
       "postContent": post.postContent,
       "postImageUrl": post.postImageUrl,
-      "postVideoUrl": "",
+      "postVideoUrl": post.postVideoUrl,
       "postFileUrl": "",
       "postTotalLikes": post.postTotalLikes ?? '',
       "postTotalComments": post.postTotalComments ?? '',
@@ -130,6 +131,124 @@ class PostDataSource {
     } else {
       print('Xóa thất bại');
       return false;
+    }
+  }
+
+  Future<List<FullPostModel>> getComments(String postId, String token) async {
+    final response = await client.get(
+      Uri.parse('https://mediamgmapi.azurewebsites.net/posts/comment/$postId'),
+      headers: header(token)
+    );
+
+    if(response.statusCode == 200) {
+      var res = json.decode(response.body);
+
+      return res.map((comment) => FullPostModel.fromJson(comment))
+                .cast<FullPostModel>()
+                .toList();
+    } else {
+      throw new Exception('Lỗi hệ thống');
+    }
+  }
+
+  Future<bool> createComment(FullPostModel comment, String token) async {
+    var data = {
+      "postId": "",
+      "postContent": comment.postContent,
+      "postImageUrl": comment.postImageUrl,
+      "postVideoUrl": comment.postVideoUrl,
+      "postFileUrl": "",
+      "postTotalLikes": 0,
+      "postTotalComments": 0,
+      "postTotalShares": 0,
+      "postTotalMarks": 0,
+      "userId": comment.userId,
+      "replyId": comment.replyId
+    };
+
+    final response = await client.post(
+      Uri.parse('https://mediamgmapi.azurewebsites.net/posts/comment'),
+      body: jsonEncode(data),
+      headers: header(token)
+    );
+
+    if(response.statusCode == 200) {
+      print('Thành công');
+      return true;
+    } else {
+      print('Thất bại');
+      return false;
+    }
+  }
+
+  Future<String> likePost(String postId, String userId, String token) async {
+    var data = {
+      "postId": postId,
+      "userId": userId,
+    };
+    
+    final response = await client.post(
+      Uri.parse('https://mediamgmapi.azurewebsites.net/posts/like'),
+      body: jsonEncode(data),
+      headers: header(token)
+    );
+
+    if(response.statusCode == 200) {
+      var res = json.decode(response.body);
+      return res['postTotalLikes'].toString();
+    } else {
+      throw new Exception(response.statusCode);
+    }
+  }
+
+  Future<String> disLikePost(String postId, String userId, String token) async {
+    var data = {
+      "postId": postId,
+      "userId": userId
+    };
+    
+    final response = await client.delete(
+      Uri.parse('https://mediamgmapi.azurewebsites.net/posts/dislike'),
+      body: jsonEncode(data),
+      headers: header(token)
+    );
+
+    if(response.statusCode == 200) {
+      var res = json.decode(response.body);
+      return res['postTotalLikes'].toString();
+    } else {
+      print('dislike thất bại');
+      throw new Exception(response.statusCode);
+    }
+  }
+
+  Future<bool> getLiker(String userId, String postId, String token) async {
+    final response = await client.get(
+      Uri.parse('https://mediamgmapi.azurewebsites.net/posts/liker/$userId/$postId'),
+      headers: header(token)
+    );
+
+    if(response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Future<List<FullPostModel>> getPostByUser(String userId, String token) async {
+    final response = await client.get(
+      Uri.parse('https://mediamgmapi.azurewebsites.net/posts/$userId/users'),
+      headers: header(token)
+    );
+
+    if(response.statusCode == 200) {
+      var res = json.decode(response.body);
+
+      return res.map((post) => FullPostModel.fromJson(post))
+                .cast<FullPostModel>()
+                .toList();
+    } else {
+      throw new Exception(response.reasonPhrase);
     }
   }
 }

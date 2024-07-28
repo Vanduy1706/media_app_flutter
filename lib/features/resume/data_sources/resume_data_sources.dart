@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:media_mobile/features/authentication/models/user_model.dart';
 import 'package:media_mobile/features/resume/models/profile_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -81,6 +82,20 @@ class ResumeDataSource {
     } else {
       print('Thay đổi thất bại');
       return false;
+    }
+  }
+
+  Future<UserModel> getProfileUser(String userId, String token) async {
+    final response = await client.get(
+      Uri.parse('https://mediamgmapi.azurewebsites.net/users/profile/$userId'),
+      headers: header(token)
+    );
+
+    if(response.statusCode == 200) {
+      var res = json.decode(response.body);
+      return UserModel.fromJson(res);
+    } else {
+      throw new Exception(response.reasonPhrase);
     }
   }
 }

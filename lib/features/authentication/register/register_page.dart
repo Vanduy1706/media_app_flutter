@@ -47,6 +47,7 @@ class _RegisterPageState extends State<RegisterPage> {
   Future<void> _register() async {
     if(_formKey.currentState?.validate() == true) {
       try {
+        _showLoadingDialog(context, 'Thực hiện đăng ký...');
         var userName = _userNameController.text;
         var accountName = _accountNameController.text;
         var accountPassword = _accountPasswordController.text;
@@ -124,7 +125,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           Text(
                             "Đăng ký",
                             style: TextStyle(
-                              color: Color.fromRGBO(38, 37, 43, 1),
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,
                               fontSize: screenWidth * 0.05, // 5% of screen width as font size
                             ),
@@ -133,7 +134,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           Text(
                             "Nhập thông tin cá nhân của bạn",
                             style: TextStyle(
-                              color: Color.fromRGBO(147, 146, 149, 1),
+                              color: Theme.of(context).colorScheme.secondary,
                               fontWeight: FontWeight.w500,
                               fontSize: screenWidth * 0.035, // 3.5% of screen width as font size
                             ),
@@ -147,7 +148,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 child: Text(
                                   "Họ và tên",
                                   style: TextStyle(
-                                    color: Color.fromRGBO(38, 37, 43, 1),
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: screenWidth * 0.045, // 4.5% of screen width as font size
                                   ),
@@ -158,6 +159,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: "Nhập họ và tên",
+                                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold),
                                 ),
                                 validator: (value) {
                                   if(value == null || value.isEmpty) {
@@ -177,7 +179,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 child: Text(
                                   "Tài khoản",
                                   style: TextStyle(
-                                    color: Color.fromRGBO(38, 37, 43, 1),
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: screenWidth * 0.045,
                                   ),
@@ -188,6 +190,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: "Nhập tài khoản",
+                                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold),
                                 ),
                                 validator: (value) {
                                   if(value == null || value.isEmpty) {
@@ -207,7 +210,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 child: Text(
                                   "Mật khẩu",
                                   style: TextStyle(
-                                    color: Color.fromRGBO(38, 37, 43, 1),
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: screenWidth * 0.045,
                                   ),
@@ -229,6 +232,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       
                                   border: OutlineInputBorder(),
                                   hintText: "Nhập Mật khẩu",
+                                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold),
                                 ),
                                 validator: (value) {
                                   if(value == null || value.isEmpty) {
@@ -248,7 +252,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                 child: Text(
                                   "Xác nhận mật khẩu",
                                   style: TextStyle(
-                                    color: Color.fromRGBO(38, 37, 43, 1),
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: screenWidth * 0.045,
                                   ),
@@ -270,6 +274,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       
                                   border: OutlineInputBorder(),
                                   hintText: "Nhập xác nhận mật khẩu",
+                                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold),
                                 ),
                                 validator: (value) {
                                   if(value == null || value.isEmpty) {
@@ -286,7 +291,7 @@ class _RegisterPageState extends State<RegisterPage> {
                             child: Text(
                               'Đăng ký',
                               style: TextStyle(
-                                color: Color.fromRGBO(244, 244, 244, 1),
+                                color: Colors.white,
                                 fontWeight: FontWeight.w500,
                                 fontSize: screenWidth * 0.04, // 4% of screen width as font size
                               ),
@@ -313,16 +318,16 @@ class _RegisterPageState extends State<RegisterPage> {
                     Text(
                       'Đã có tài khoản?',
                       style: TextStyle(
-                        color: Color.fromRGBO(147, 146, 149, 1),
+                        color: Theme.of(context).colorScheme.secondary,
                         fontWeight: FontWeight.w600,
                         fontSize: screenWidth * 0.035, // 3.5% of screen width as font size
                       ),
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => LoginPage()),
+                          MaterialPageRoute(builder: (context) => const LoginPage()),
                         );
                       },
                       child: Text(

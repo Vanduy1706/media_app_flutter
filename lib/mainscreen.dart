@@ -66,6 +66,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      // backgroundColor: Theme.of(context).colorScheme.background,
       body: NotificationListener<UserScrollNotification>(
         onNotification: (notification) {
           if (notification.direction == ScrollDirection.forward) {
@@ -107,7 +108,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 width: 24,
                 height: 24,
                 colorFilter: ColorFilter.mode(
-                  _selectedIndex == 0 ? Color.fromRGBO(119, 82, 254, 1) : Color.fromRGBO(38, 37, 43, 1),
+                  _selectedIndex == 0 ? Color.fromRGBO(119, 82, 254, 1) : Theme.of(context).colorScheme.primary,
                   BlendMode.srcIn,
                 ),
               ),
@@ -119,7 +120,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 width: 24,
                 height: 24,
                 colorFilter: ColorFilter.mode(
-                  _selectedIndex == 1 ? Color.fromRGBO(119, 82, 254, 1) : Color.fromRGBO(38, 37, 43, 1),
+                  _selectedIndex == 1 ? Color.fromRGBO(119, 82, 254, 1) : Theme.of(context).colorScheme.primary,
                   BlendMode.srcIn,
                 ),
               ),
@@ -131,7 +132,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 width: 24,
                 height: 24,
                 colorFilter: ColorFilter.mode(
-                  _selectedIndex == 2 ? Color.fromRGBO(119, 82, 254, 1) : Color.fromRGBO(38, 37, 43, 1),
+                  _selectedIndex == 2 ? Color.fromRGBO(119, 82, 254, 1) : Theme.of(context).colorScheme.primary,
                   BlendMode.srcIn,
                 ),
               ),
@@ -143,17 +144,17 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
                 width: 24,
                 height: 24,
                 colorFilter: ColorFilter.mode(
-                  _selectedIndex == 3 ? Color.fromRGBO(119, 82, 254, 1) : Color.fromRGBO(38, 37, 43, 1),
+                  _selectedIndex == 3 ? Color.fromRGBO(119, 82, 254, 1) : Theme.of(context).colorScheme.primary,
                   BlendMode.srcIn,
                 ),
               ),
               label: 'Search',
             )
           ],
-          backgroundColor: Color.fromRGBO(244, 244, 244, 1),
+          backgroundColor: Theme.of(context).colorScheme.background,
           currentIndex: _selectedIndex,
           selectedItemColor: Color.fromRGBO(119, 82, 254, 1),
-          unselectedItemColor: Color.fromRGBO(38, 37, 43, 1),
+          unselectedItemColor: Theme.of(context).colorScheme.primary,
           showSelectedLabels: false,
           showUnselectedLabels: false,
           onTap: _onItemTapped,
@@ -170,7 +171,7 @@ class _MainScreenState extends State<MainScreen> with SingleTickerProviderStateM
               backgroundColor: Color.fromRGBO(119, 82, 254, 1),
               child: Icon(
                 Icons.add,
-                color: Color.fromRGBO(244, 244, 244, 1),
+                color: Colors.white,
               ),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(50.0)

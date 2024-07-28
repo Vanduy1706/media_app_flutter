@@ -15,19 +15,19 @@ class FriendsPageState extends State<FriendsPage> {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Color.fromRGBO(244, 244, 244, 1),
+      backgroundColor: Theme.of(context).colorScheme.background,
       appBar: AppBar(
-        backgroundColor: Color.fromRGBO(244, 244, 244, 1),
+        backgroundColor: Theme.of(context).appBarTheme.backgroundColor,
         leading: GestureDetector(
           onTap: () => {
             widget.scaffoldKey.currentState?.openDrawer()
           },
-          child: Icon(Icons.account_circle, color: Color.fromRGBO(38, 37, 43, 1), size: screenWidth * 0.06), // 6% of screen width
+          child: Icon(Icons.account_circle, color: Theme.of(context).appBarTheme.iconTheme?.color, size: screenWidth * 0.06), // 6% of screen width
         ),
         title: Text(
           'Đã theo dõi',
           style: TextStyle(
-            color: Color.fromRGBO(38, 37, 43, 1),
+            color: Theme.of(context).colorScheme.primary,
             fontWeight: FontWeight.bold,
             fontSize: screenWidth * 0.05, // 5% of screen width
           ),
@@ -35,7 +35,7 @@ class FriendsPageState extends State<FriendsPage> {
         actions: <Widget>[
           GestureDetector(
             onTap: () => {},
-            child: Icon(Icons.settings, color: Color.fromRGBO(38, 37, 43, 1), size: screenWidth * 0.06), // 6% of screen width
+            child: Icon(Icons.settings, color: Theme.of(context).colorScheme.primary, size: screenWidth * 0.06), // 6% of screen width
           ),
           SizedBox(width: screenWidth * 0.025), // 2.5% of screen width
         ],

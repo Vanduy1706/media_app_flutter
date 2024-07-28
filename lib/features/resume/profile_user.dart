@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:intl/intl.dart';
+import 'package:media_mobile/features/authentication/data_sources/auth_data_sources.dart';
 import 'package:media_mobile/features/authentication/models/user_model.dart';
 import 'package:media_mobile/features/comment/widget/comment_widget.dart';
 import 'package:media_mobile/features/home/fullPost_model.dart';
@@ -16,16 +16,17 @@ import 'package:media_mobile/features/postDetails/post_details_page.dart';
 import 'package:media_mobile/features/resume/edit_resume.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ResumePage extends StatefulWidget {
-  const ResumePage({super.key});
+class ProfileUser extends StatefulWidget {
+  final UserModel user;
+  final UserModel currentUser;
+  const ProfileUser({super.key, required this.user, required this.currentUser});
 
   @override
-  State<ResumePage> createState() => _ResumePageState();
+  State<ProfileUser> createState() => _ProfileUserState();
 }
 
-class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateMixin {
+class _ProfileUserState extends State<ProfileUser> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  UserModel user = UserModel.userEmpty();
   late String formattedDate;
   late Future<List<FullPostModel>> getPostByUser;
   late String id;
@@ -34,7 +35,14 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
   void initState() {
     super.initState();
     _tabController = TabController(length: 5, vsync: this);
-    getPostByUser = _getPostByUser(user.userId!);
+    getPostByUser = _getPostByUser(widget.user.userId!);
+    format();
+  }
+
+  void format() {
+    DateTime utcnow = DateTime.parse(widget.user.createdAt!);
+    DateTime localTime = utcnow.toLocal();
+    formattedDate = DateFormat('dd/MM/yyyy').format(localTime);
   }
 
   @override
@@ -43,21 +51,10 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
     super.dispose();
   }
 
-  Future<void> getDataUser() async {
-    SharedPreferences pref = await SharedPreferences.getInstance();
-    String strUser = pref.getString('user')!;
-    user = UserModel.fromJson(jsonDecode(strUser));
-
-    // Chuyển đổi và định dạng ngày tháng
-    DateTime utcnow = DateTime.parse(user.createdAt!);
-    DateTime localTime = utcnow.toLocal();
-    formattedDate = DateFormat('dd/MM/yyyy').format(localTime);
-  }
-
   Future<List<FullPostModel>> _getPostByUser(String userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     id = prefs.getString('id').toString();
-    return await PostDataSource().getPostByUser(prefs.getString('id').toString(), prefs.getString('token').toString() );
+    return await PostDataSource().getPostByUser(userId, prefs.getString('token').toString() );
   }
 
   void _showOptions(BuildContext context, String postId) {
@@ -80,7 +77,7 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                 title: Text('Chỉnh sửa bài đăng', style: TextStyle(color: Theme.of(context).colorScheme.primary),),
                 onTap: () {
                   Navigator.pop(context);
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatePostForm(user: user, postId: postId)));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => UpdatePostForm(user: widget.user, postId: postId)));
                 },
               ),
               ListTile(
@@ -212,23 +209,7 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: FutureBuilder(
-        future: getDataUser(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else {
-            return buildUserProfile(context);
-          }
-        },
-      ),
-    );
-  }
-
-  Widget buildUserProfile(BuildContext context) {
-    return NestedScrollView(
+      body: NestedScrollView(
       headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
         return <Widget>[
           SliverAppBar(
@@ -239,9 +220,9 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  user.backgroundImage != null
+                  widget.user.backgroundImage != null
                     ? CachedNetworkImage(
-                        imageUrl: user.backgroundImage!,
+                        imageUrl: widget.user.backgroundImage!, 
                         progressIndicatorBuilder: (_, url, download) {
                           if(download.progress != null) {
                             return const LinearProgressIndicator();
@@ -281,9 +262,9 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                     left: 10,
                     child: CircleAvatar(
                       radius: 40,
-                      backgroundImage: user.personalImage != null
+                      backgroundImage: widget.user.personalImage != null
                           ? CachedNetworkImageProvider(
-                              user.personalImage!,
+                              widget.user.personalImage!,
                               cacheManager: CacheManager(
                                 Config(
                                   'customCacheKey',
@@ -297,10 +278,10 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                               cacheManager: CacheManager(
                                 Config(
                                   'customCacheKey',
-                                  stalePeriod: const Duration(days: 7),
-                                  maxNrOfCacheObjects: 100,
-                                )
-                              )
+                                  stalePeriod: const Duration(days: 7), // Thời gian cache là 7 ngày
+                                  maxNrOfCacheObjects: 100, // Số lượng đối tượng tối đa trong cache
+                                ),
+                              ),
                             ),
                     ),
                   ),
@@ -316,13 +297,31 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                 Container(
                   height: 40,
                 ),
+                if(widget.currentUser != widget.user.userId)
+                Positioned(
+                  right: 10,
+                  child: ElevatedButton(
+                    onPressed: () {},
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color.fromRGBO(119, 82, 254, 1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                      ),
+                    ),
+                    child: Text(
+                      'Theo dõi',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                )
+                else 
                 Positioned(
                   right: 10,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EditResume(user: user)),
+                        MaterialPageRoute(builder: (context) => EditResume(user: widget.user)),
                       );
                     },
                     style: ElevatedButton.styleFrom(
@@ -337,7 +336,6 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                     ),
                   ),
                 ),
-                
               ],
             ),
           ),
@@ -351,7 +349,7 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          user.userName!,
+                          widget.user.userName!,
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -359,9 +357,9 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                           ),
                         ),
                         SizedBox(height: 8),
-                        if(user.decription != null)
+                        if(widget.user.decription != null)
                         Text(
-                          user.decription!,
+                          widget.user.decription!,
                           style: TextStyle(
                             fontSize: 16,
                             color: Theme.of(context).colorScheme.primary
@@ -369,22 +367,22 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                         )
                         else Container(),
                         SizedBox(height: 16),
-                        if(user.address != "")
+                        if(widget.user.address != "")
                         Row(
                           children: [
                             Icon(Icons.location_on),
                             SizedBox(width: 8),
-                            Text(user.address!, style: TextStyle(color: Theme.of(context).colorScheme.primary),),
+                            Text(widget.user.address!, style: TextStyle(color: Theme.of(context).colorScheme.primary),),
                           ],
                         )
                         else Container(),
                         SizedBox(height: 8),
-                        if(user.job != "")
+                        if(widget.user.job != "")
                         Row(
                           children: [
                             Icon(Icons.school),
                             SizedBox(width: 8),
-                            Text(user.job!, style: TextStyle(color: Theme.of(context).colorScheme.primary),),
+                            Text(widget.user.job!, style: TextStyle(color: Theme.of(context).colorScheme.primary),),
                           ],
                         )
                         else Container(),
@@ -469,9 +467,9 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                         onOptionTap: () => _showOptions(context, snapshot.data![index].postId!),
                         onImageTap: () => _handleImageTap(context, snapshot.data![index].postImageUrl!),
                         onLikeTap: _handleLikeTap,
-                        onCommentTap: () => _handleCommentTap(snapshot.data![index], user),
+                        onCommentTap: () => _handleCommentTap(snapshot.data![index], widget.currentUser),
                         onShareTap: _handleShareTap,
-                        onBookmarkTap: _handleBookmarkTap, onPostTap: () => _navigateToPostDetail(snapshot.data![index], user), id: id,
+                        onBookmarkTap: _handleBookmarkTap, onPostTap: () => _navigateToPostDetail(snapshot.data![index], widget.currentUser), id: id,
                       ),
                     );
                   },
@@ -495,18 +493,18 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                     if(snapshot.data![index].postTotalComments == '0') {
                       return Container();
                     }
-                      return GestureDetector(
-                        onTap: () => {},
-                        child: PostWidget(
-                          post: snapshot.data![index],
-                          onOptionTap: () => _showOptions(context, snapshot.data![index].postId!),
-                          onImageTap: () => _handleImageTap(context, snapshot.data![index].postImageUrl!),
-                          onLikeTap: _handleLikeTap,
-                          onCommentTap: () => _handleCommentTap(snapshot.data![index], user),
-                          onShareTap: _handleShareTap,
-                          onBookmarkTap: _handleBookmarkTap, onPostTap: () => _navigateToPostDetail(snapshot.data![index], user), id: id,
-                        ),
-                      );
+                    return GestureDetector(
+                      onTap: () => {},
+                      child: PostWidget(
+                        post: snapshot.data![index],
+                        onOptionTap: () => _showOptions(context, snapshot.data![index].postId!),
+                        onImageTap: () => _handleImageTap(context, snapshot.data![index].postImageUrl!),
+                        onLikeTap: _handleLikeTap,
+                        onCommentTap: () => _handleCommentTap(snapshot.data![index], widget.currentUser),
+                        onShareTap: _handleShareTap,
+                        onBookmarkTap: _handleBookmarkTap, onPostTap: () => _navigateToPostDetail(snapshot.data![index], widget.currentUser), id: id,
+                      ),
+                    );
                   },
                 );
               }
@@ -528,18 +526,18 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                     if(snapshot.data![index].replyId == null) {
                       return Container();
                     }
-                      return GestureDetector(
-                        onTap: () => {},
-                        child: PostWidget(
-                          post: snapshot.data![index],
-                          onOptionTap: () => _showOptions(context, snapshot.data![index].postId!),
-                          onImageTap: () => _handleImageTap(context, snapshot.data![index].postImageUrl!),
-                          onLikeTap: _handleLikeTap,
-                          onCommentTap: () => _handleCommentTap(snapshot.data![index], user),
-                          onShareTap: _handleShareTap,
-                          onBookmarkTap: _handleBookmarkTap, onPostTap: () => _navigateToPostDetail(snapshot.data![index], user), id: id,
-                        ),
-                      );
+                    return GestureDetector(
+                      onTap: () => {},
+                      child: PostWidget(
+                        post: snapshot.data![index],
+                        onOptionTap: () => _showOptions(context, snapshot.data![index].postId!),
+                        onImageTap: () => _handleImageTap(context, snapshot.data![index].postImageUrl!),
+                        onLikeTap: _handleLikeTap,
+                        onCommentTap: () => _handleCommentTap(snapshot.data![index], widget.currentUser),
+                        onShareTap: _handleShareTap,
+                        onBookmarkTap: _handleBookmarkTap, onPostTap: () => _navigateToPostDetail(snapshot.data![index], widget.currentUser), id: id,
+                      ),
+                    );
                   },
                 );
               }
@@ -558,21 +556,22 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
                 return ListView.builder(
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
-                    if(snapshot.data![index].postTotalLikes == "0") {
+                    if(snapshot.data![index].postTotalLikes == '0') {
                       return Container();
                     }
-                      return GestureDetector(
-                        onTap: () => {},
-                        child: PostWidget(
-                          post: snapshot.data![index],
-                          onOptionTap: () => _showOptions(context, snapshot.data![index].postId!),
-                          onImageTap: () => _handleImageTap(context, snapshot.data![index].postImageUrl!),
-                          onLikeTap: _handleLikeTap,
-                          onCommentTap: () => _handleCommentTap(snapshot.data![index], user),
-                          onShareTap: _handleShareTap,
-                          onBookmarkTap: _handleBookmarkTap, onPostTap: () => _navigateToPostDetail(snapshot.data![index], user), id: id,
-                        ),
-                      );
+                    return GestureDetector(
+                      onTap: () => {},
+                      child: PostWidget(
+                        post: snapshot.data![index],
+                        onOptionTap: () => _showOptions(context, snapshot.data![index].postId!),
+                        onImageTap: () => _handleImageTap(context, snapshot.data![index].postImageUrl!),
+                        onLikeTap: _handleLikeTap,
+                        onCommentTap: () => _handleCommentTap(snapshot.data![index], widget.currentUser),
+                        onShareTap: _handleShareTap,
+                        onBookmarkTap: _handleBookmarkTap, 
+                        onPostTap: () => _navigateToPostDetail(snapshot.data![index], widget.currentUser), id: id,
+                      ),
+                    );
                   },
                 );
               }
@@ -581,20 +580,17 @@ class _ResumePageState extends State<ResumePage> with SingleTickerProviderStateM
           Center(child: Text('Phương tiện')),
         ],
       ),
+    )
     );
   }
 
-  void _handleLikeTap() {
-    // Xử lý khi nhấn vào biểu tượng like
-  }
 
-  void _handleShareTap() {
-    // Xử lý khi nhấn vào biểu tượng chia sẻ
-  }
+  void _handleLikeTap() {}
 
-  void _handleBookmarkTap() {
-    // Xử lý khi nhấn vào biểu tượng đánh dấu
-  }
+
+  void _handleShareTap() {}
+
+  void _handleBookmarkTap() {}
 
   void _handleImageTap(BuildContext context, String imageUrl) {
     Navigator.push(

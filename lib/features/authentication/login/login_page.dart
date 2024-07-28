@@ -3,6 +3,7 @@ import 'package:media_mobile/core/shared_preferences/shared_pref.dart';
 import 'package:media_mobile/features/authentication/data_sources/auth_data_sources.dart';
 import 'package:media_mobile/features/authentication/register/register_page.dart';
 import 'package:media_mobile/mainscreen.dart';
+import 'package:media_mobile/youtube_guide.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
@@ -73,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
           ),
           actions: [
             TextButton(
-              onPressed: () => {},
+              onPressed: () => Navigator.pop(context),
               child: Text('Hủy'),
             ),
           ],
@@ -104,7 +105,7 @@ class _LoginPageState extends State<LoginPage> {
           MaterialPageRoute(builder: (context) => const MainScreen())
         );
       } catch (e) {
-        _updateLoadingDialog(context, Icons.close, Colors.red, 'Đăng nhập thành công!', 'Đăng nhập thất bại!');
+        _updateLoadingDialog(context, Icons.close, Theme.of(context).colorScheme.primary, 'Đăng nhập thành công!', 'Đăng nhập thất bại!');
       }
      
     }
@@ -139,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                           Text(
                             "Đăng nhập",
                             style: TextStyle(
-                              color: Color.fromRGBO(38, 37, 43, 1),
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,
                               fontSize: screenWidth * 0.05, // 5% of screen width as font size
                             ),
@@ -148,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                           Text(
                             "Đăng nhập để tiếp tục sử dụng mạng xã hội",
                             style: TextStyle(
-                              color: Color.fromRGBO(147, 146, 149, 1),
+                              color: Theme.of(context).colorScheme.secondary,
                               fontWeight: FontWeight.w500,
                               fontSize: screenWidth * 0.035, // 3.5% of screen width as font size
                             ),
@@ -162,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                                 child: Text(
                                   "Tài khoản",
                                   style: TextStyle(
-                                    color: Color.fromRGBO(38, 37, 43, 1),
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: screenWidth * 0.045, // 4.5% of screen width as font size
                                   ),
@@ -173,6 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                                 decoration: InputDecoration(
                                   border: OutlineInputBorder(),
                                   hintText: "Nhập tài khoản",
+                                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold)
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -192,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                                 child: Text(
                                   "Mật khẩu",
                                   style: TextStyle(
-                                    color: Color.fromRGBO(38, 37, 43, 1),
+                                    color: Theme.of(context).colorScheme.primary,
                                     fontWeight: FontWeight.bold,
                                     fontSize: screenWidth * 0.045,
                                   ),
@@ -213,6 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   border: OutlineInputBorder(),
                                   hintText: "Nhập mật khẩu",
+                                  hintStyle: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.bold)
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
@@ -229,7 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: Text(
                               'Đăng nhập',
                               style: TextStyle(
-                                color: Color.fromRGBO(244, 244, 244, 1),
+                                color: Colors.white,
                                 fontWeight: FontWeight.w500,
                                 fontSize: screenWidth * 0.04, // 4% of screen width as font size
                               ),
@@ -256,16 +259,17 @@ class _LoginPageState extends State<LoginPage> {
                     Text(
                       'Không có tài khoản?',
                       style: TextStyle(
-                        color: Color.fromRGBO(147, 146, 149, 1),
+                        color: Theme.of(context).colorScheme.secondary,
                         fontWeight: FontWeight.w600,
                         fontSize: screenWidth * 0.035, // 3.5% of screen width as font size
                       ),
                     ),
+                    SizedBox(width: 4,),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
-                          MaterialPageRoute(builder: (context) => RegisterPage()),
+                          MaterialPageRoute(builder: (context) => const RegisterPage()),
                         );
                       },
                       child: Text(
@@ -278,6 +282,23 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     )
                   ],
+                ),
+              ),
+              SizedBox(height: 20,),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const ApiYoutube()),
+                  );
+                },
+                child: Text(
+                  'Xem hướng dẫn sử dụng ở đây.',
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: screenWidth * 0.035,
+                  ),
                 ),
               )
             ],

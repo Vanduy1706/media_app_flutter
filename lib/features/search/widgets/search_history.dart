@@ -14,9 +14,9 @@ class SearchHistory extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(right: 10),
             child: SvgPicture.asset('assets/icons/ic_round-history.svg', width: 24, height: 24,
-            colorFilter: ColorFilter.mode(Color.fromRGBO(147, 146, 149, 1), BlendMode.srcIn),),
+            colorFilter: ColorFilter.mode(Colors.grey, BlendMode.srcIn),),
           ),
-          Text(inputSearch, style: TextStyle(color: Color.fromRGBO(147, 146, 149, 1), fontWeight: FontWeight.bold, fontSize: 16),)
+          Text(inputSearch, style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold, fontSize: 16),)
         ],
       ),
     );

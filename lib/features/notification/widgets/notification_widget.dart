@@ -35,7 +35,7 @@ class NotificationWidget extends StatelessWidget {
                   Text(
                     nameFollowUser,
                     style: TextStyle(
-                      color: Color.fromRGBO(38, 37, 43, 1),
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.bold,
                       fontSize: screenWidth * 0.04, // 4% of screen width
                     ),
@@ -44,7 +44,7 @@ class NotificationWidget extends StatelessWidget {
                   Text(
                     'đã thích bài viết của bạn',
                     style: TextStyle(
-                      color: Color.fromRGBO(92, 91, 96, 1),
+                      color: Theme.of(context).colorScheme.primary,
                       fontWeight: FontWeight.w400,
                       fontSize: screenWidth * 0.04, // 4% of screen width
                     ),
@@ -58,7 +58,7 @@ class NotificationWidget extends StatelessWidget {
             width: screenWidth * 0.06, // 6% of screen width
             height: screenWidth * 0.06,
             colorFilter: ColorFilter.mode(
-              Color.fromRGBO(38, 37, 43, 1),
+              Theme.of(context).colorScheme.primary,
               BlendMode.srcIn,
             ),
           ),
